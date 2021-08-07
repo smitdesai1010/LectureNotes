@@ -1,0 +1,21 @@
+{
+    "manifest_version": 2,
+    "name": "Note.AI",
+    "description": "Notes.AI helps to take notes from a online meeting in real time with various languages",
+    "version": "1.0",
+
+    "browser_action": {
+        "default_icon": "icon/note-taking.png",
+        "default_popup": "popup.html"
+    },
+
+    "background":{
+        "scripts": ["js/socket.io.js"]
+    },
+
+    "permissions": [
+        "activeTab",
+        "downloads",
+        "tabCapture"
+    ]
+}

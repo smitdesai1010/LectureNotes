@@ -1,0 +1,30 @@
+html{
+    height: auto;
+    width: 250px;
+}
+
+#heading{
+    text-align: center;
+    color: rgb(10, 186, 255);
+    font-weight: bolder;
+}
+
+i{
+    cursor: pointer;
+}
+
+#mic-icon{
+    color: red;
+}
+
+#contact{
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    font-size: 13px;
+}
+
+#profile{
+    font-size: 12px;
+}
+
