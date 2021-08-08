@@ -10,7 +10,10 @@
     },
 
     "background":{
-        "scripts": ["js/socket.io.js"]
+        "scripts": [
+            "js/socket.io.js",
+            "js/background.js"   
+        ]
     },
 
     "permissions": [

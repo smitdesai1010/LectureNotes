@@ -1,29 +1,21 @@
-var WebSocketServer = require('websocket').server;
-var http = require('http');
-
-var server = http.createServer();
-server.listen(1337, () => console.log(`Application running Port 1337`));
-
-//remove other websocket modules
-
-wsServer = new WebSocketServer({
-  httpServer: server
+var server = require('http').createServer();
+var io = require('socket.io')(server, {
+  cors: {
+    origin: 'chrome-extension://idfglfldodgboholaplhokbkffmcccdn',
+    credentials : true
+  }
 });
 
-wsServer.on('request', function(request) {
-  var connection = request.accept(null, request.origin);
+//Whenever someone connects this gets executed
+io.on('connection', (socket) => {
+   console.log('A user connected');
 
-  // This is the most important callback for us, we'll handle
-  // all messages from users here.
-  connection.on('message', (message) => {
-      console.log('message')
-  });
+   socket.on('disconnect', () => console.log('A user disconnected') );
 
- 
-
-  connection.on('close', function(connection) {
-  });
 });
 
+server.listen(3000, () => console.log('listening on *:3000') );
+
+//https://stackoverflow.com/questions/24058157/socket-io-node-js-cross-origin-request-blocked
 
 
