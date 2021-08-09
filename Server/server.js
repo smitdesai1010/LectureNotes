@@ -16,6 +16,4 @@ io.on('connection', (socket) => {
 
 server.listen(3000, () => console.log('listening on *:3000') );
 
-//https://stackoverflow.com/questions/24058157/socket-io-node-js-cross-origin-request-blocked
-
 
