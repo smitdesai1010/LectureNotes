@@ -11,4 +11,8 @@ https://stackoverflow.com/questions/58739556/how-to-change-the-default-audio-inp
 https://stackoverflow.com/questions/30547322/how-to-convert-getusermedia-audio-stream-into-a-blob-or-buffer
 https://stackoverflow.com/questions/20850396/stream-recorded-audio-from-browser-to-server/20850467#20850467
 https://stackoverflow.com/questions/49811722/request-audio-access-with-popup-in-chrome-extension
+
+
+WEBRTC
+https://stackoverflow.com/questions/34102011/streaming-getusermedia-to-server
 https://stackoverflow.com/questions/25523289/sending-a-mediastream-to-host-server-with-webrtc-after-it-is-captured-by-getuser

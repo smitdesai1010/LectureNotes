@@ -10,6 +10,7 @@ var io = require('socket.io')(server, {
 io.on('connection', (socket) => {
    console.log('A user connected');
 
+   socket.on('audioData', (audioData) => console.log(JSON.parse(audioData)));
    socket.on('disconnect', () => console.log('A user disconnected') );
 
 });

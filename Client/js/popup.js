@@ -35,7 +35,7 @@ document.getElementById("microphone")
             }
 
             else
-                console.error(response.error);
+                console.log('ERROR: '+response.error);
         });
     })    
 
