@@ -25,7 +25,6 @@ document.getElementById("microphone")
         }
 
         chrome.runtime.sendMessage(obj, (response) => {
-
             if ( !("error" in response) )
             {
                 document.getElementById("mic-icon").className = 
@@ -40,9 +39,31 @@ document.getElementById("microphone")
     })    
 
 
+document.getElementById("getNotes")
+    .addEventListener('click', () => {
+
+        chrome.runtime.sendMessage({event : 'getNotes'}, (response) => {
+            if ( "error" in response )
+                console.log('ERROR: '+response.error);   
+        });
+
+    })
+
+
 document.getElementById("contact")
     .addEventListener('click', () => {
         let profile = document.getElementById("profile")
         profile.style.display = profile.style.display == "none" ? "block" : "none";    
     })
 
+
+
+chrome.runtime.onMessage.addListener( (request,sender,response) => {
+    if (request.event == 'stopRecording')
+    {
+        isRecording = false;
+
+        document.getElementById("mic-icon").className = 
+                    isRecording ? "fa fa-microphone-slash fa-2x" : "fa fa-microphone fa-2x";
+    }
+})

@@ -1,2 +1,3 @@
 Server/node_modules
 Server/test.js
+Server/*.env
