@@ -1,3 +1,6 @@
 Server/node_modules
 Server/test.js
 Server/*.env
+Server/Speech-Text-GCP.json
+Server/test2.js
+Client/js/MediaStreamRecorder.js

@@ -57,19 +57,21 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 
     else if (request.event === 'getNotes') {
         
+        // //check if socket is connected or not
         if (socket == null) {
             alert('Recording not started');
             reponse({error : 'Recording not started'});
             return;
         }
 
-        //stop Recording
+        // //stop Recording
         if (currRecodingTabID !== null)
             chrome.tabs.sendMessage(currRecodingTabID, {event: "stopRecording"}, ()=>{} );
 
         socket.emit('getNotes', '');
+        
         socket.on('notes', data => {
-
+            
             data = JSON.parse(data);
 
             if ("error" in data) {
@@ -90,11 +92,11 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
                 response({}); //success - empty object                
             }
 
-        }
+        })
     }
     
     return true; //making responses asynchronous
-}
+})
 
 
 async function startRecording() {
@@ -121,7 +123,7 @@ async function startRecording() {
         return;
     }
 
-    mediaRecorder = new MediaRecorder(mediaStream);
+    mediaRecorder = new MediaRecorder(mediaStream, {mimeType: "audio/wav"});
     mediaRecorder.start(5000);      //time stamp of 5 sec
 
     mediaRecorder.ondataavailable = (audioData) => {
