@@ -16,31 +16,34 @@ const io = require('socket.io')(server, {
   cors: {
     origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',
     credentials : true
-  }
+  }, 
+  pingTimeout: 6,
+  pingInterval: 25
 });
 
 
 //Whenever someone connects, this gets executed
 io.on('connection', (socket) => {
-   console.log('A user connected');
+   console.log('A user connected: '+socket.handshake.address);
    let audioData = '';
 
    socket.on('audioData', (data) => {
-      // console.log(util.inspect(data.toString('base64'), false, null, true))
+      console.log('Audio data')
       audioData += data;
    });
 
    socket.on('getNotes', async (data) => {
-
+    console.log(audioData.length);
+    
     const request = {
       audio: {
         content: audioData
       },
       config: {
-        encoding: 'LINEAR16',
+        encoding: "WAV",
         sampleRateHertz: 48000,
         languageCode: 'en-US',
-        audioChannelCount: 2,
+        audioChannelCount: 1,
       }
     };
   
@@ -64,7 +67,7 @@ io.on('connection', (socket) => {
     //    socket.emit('notes',JSON.stringify({error : 'Error in DeepAI api'+error}));
     //  })
 
-     //socket.emit('notes','Smit Desai');
+     socket.emit('notes','Smit Desai');
    })
 
    socket.on('disconnect', () => console.log('A user disconnected') );
@@ -73,9 +76,12 @@ io.on('connection', (socket) => {
 server.listen(3000, () => console.log('listening on *:3000') );
 
 
+//https://stackoverflow.com/questions/17301269/can-websocket-addresses-carry-parameters
 
 //https://stackoverflow.com/questions/56453937/how-to-google-speech-to-text-using-blob-sent-from-browser-to-nodejs-server
 //https://medium.com/@ragymorkos/gettineg-monochannel-16-bit-signed-integer-pcm-audio-samples-from-the-microphone-in-the-browser-8d4abf81164d
 //https://hacks.mozilla.org/2014/06/easy-audio-capture-with-the-mediarecorder-api/
 //https://medium.com/ideas-at-igenius/delivering-a-smooth-cross-browser-speech-to-text-experience-b1e1f1f194a2
 
+//https://stackoverflow.com/questions/48874118/porting-scriptprocessor-based-application-to-audioworklet
+//https://stackoverflow.com/questions/57507737/send-microphone-audio-recorder-from-browser-to-google-speech-to-text-javascrip

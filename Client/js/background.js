@@ -2,8 +2,9 @@ const HOST = 'ws://localhost:3000';
 let socket = null;
 let currRecodingTabID = null;
 let currTabRecordingStatus = false;
+let rec = null;
+let intervalID = null;
 let mediaStream = null;
-let mediaRecorder = null;
 let audio = new Audio(); //tabCapture stops the audio to the user, so playing the audio is not      
                          //via js Object using the same stream   
 
@@ -49,14 +50,12 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
         response({}); //success - empty object
     }
 
-    else if (request.event === 'stop') {
-        
+    else if (request.event === 'stop') { 
         stopRecording();
         response({}); //success - empty object
     }
 
     else if (request.event === 'getNotes') {
-        
         // //check if socket is connected or not
         if (socket == null) {
             alert('Recording not started');
@@ -102,33 +101,55 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 async function startRecording() {
 
     if (socket === null) {
-         socket = io(HOST); //Note: if cannot connect, it will keep polling and throwing errors, but wont stop the execution of script
+         socket = io(HOST, {reconnection: false}); //Note: if cannot connect, it will keep polling and throwing errors, but wont stop the execution of script
          await new Promise( (resolve, reject) => {  
                 socket.on('connect', () => {
                 console.log('Socket connected: '+socket.id);
                 resolve();
             })
          }) 
+
+         socket.on('error', (err) => {
+            if (err.description) throw err.description;
+            else throw err; // Or whatever you want to do
+          });
+         
+         socket.on('disconnect', (reason) => console.log('Socket disconnected: '+reason))
     }
-    
+
     mediaStream = await new Promise( (resolve, reject) => {
         chrome.tabCapture.capture({audio: true}, stream => {
             resolve(stream);
         });
     })
 
-    if (mediaStream == null)
-    {
+    if (mediaStream == null) {
         alert('Unable to capture audio. Please try again !!');
         return;
     }
 
-    mediaRecorder = new MediaRecorder(mediaStream, {mimeType: "audio/wav"});
-    mediaRecorder.start(5000);      //time stamp of 5 sec
+    //-------------------------------------------------
+    const audioContext = new window.AudioContext();
+    const ctxInput = audioContext.createMediaStreamSource(mediaStream);
+    rec = new Recorder(ctxInput, { numChannels:1 });
+    rec.record();
 
-    mediaRecorder.ondataavailable = (audioData) => {
-        socket.emit('audioData', audioData.data);
-    }
+    intervalID = setInterval(() => {        
+        rec.exportWAV( blob => {
+
+            let reader = new FileReader();
+            reader.readAsDataURL(blob); 
+
+            reader.onloadend = () => {
+                console.log(blob);
+                socket.emit('audioData', "reader.result");          
+            }
+        })
+    },5000)
+
+    console.log('SampleRate: '+audioContext.sampleRate);    
+
+    //---------------------------------------------------------------------------
 
     audio.srcObject = mediaStream;  //chrome tab capture stops audio, so playing it via a background object
     audio.play();
@@ -137,15 +158,27 @@ async function startRecording() {
 
 function stopRecording() {
     
-    if (mediaStream != null)    //since mediaStream is setuped asychromously, this maybe null if the user suddenly clicks on stop recording
+    if (mediaStream != null) {  //since mediaStream is setuped asychromously, this maybe null if the user suddenly clicks on stop recording   
         mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+    }
 
-    mediaStream = null;
-    mediaRecorder = null;
+    if (rec != null) {
+        rec.stop();
+        rec = null;
+    }
+    //send the last buffered audio
+
+    clearInterval(intervalID);
     currRecodingTabID = null;
     currTabRecordingStatus = false;
     audio.pause();
 }
+
+//https://stackoverflow.com/questions/50976084/how-do-i-stream-live-audio-from-the-browser-to-google-cloud-speech-via-socket-io
+//https://www.py4u.net/discuss/347448
+//https://stackoverflow.com/questions/51368252/setting-blob-mime-type-to-wav-still-results-in-webm
+
 
 //https://stackoverflow.com/questions/4845215/making-a-chrome-extension-download-a-file
 //https://stackoverflow.com/questions/57044074/with-google-cloud-speech-to-text-and-the-node-js-sdk-how-can-i-read-the-value-o

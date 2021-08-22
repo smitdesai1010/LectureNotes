@@ -1,5 +1,5 @@
 /*!
- * Socket.IO v4.1.3
+ * Socket.IO v4.1.2
  * (c) 2014-2021 Guillermo Rauch
  * Released under the MIT License.
  */
@@ -247,7 +247,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -781,7 +781,7 @@ exports.on = on;
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
@@ -807,7 +807,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -896,18 +896,13 @@ var Socket = /*#__PURE__*/function (_typed_events_1$Stric) {
      */
 
   }, {
-    key: "active",
-    get: function get() {
-      return !!this.subs;
-    }
+    key: "connect",
+
     /**
      * "Opens" the socket.
      *
      * @public
      */
-
-  }, {
-    key: "connect",
     value: function connect() {
       if (this.connected) return this;
       this.subEvents();
@@ -1340,11 +1335,8 @@ var Socket = /*#__PURE__*/function (_typed_events_1$Stric) {
      */
 
   }, {
-    key: "volatile",
-    get: function get() {
-      this.flags["volatile"] = true;
-      return this;
-    }
+    key: "onAny",
+
     /**
      * Adds a listener that will be fired when any event is emitted. The event name is passed as the first argument to the
      * callback.
@@ -1352,9 +1344,6 @@ var Socket = /*#__PURE__*/function (_typed_events_1$Stric) {
      * @param listener
      * @public
      */
-
-  }, {
-    key: "onAny",
     value: function onAny(listener) {
       this._anyListeners = this._anyListeners || [];
 
@@ -1420,6 +1409,17 @@ var Socket = /*#__PURE__*/function (_typed_events_1$Stric) {
     value: function listenersAny() {
       return this._anyListeners || [];
     }
+  }, {
+    key: "active",
+    get: function get() {
+      return !!this.subs;
+    }
+  }, {
+    key: "volatile",
+    get: function get() {
+      this.flags["volatile"] = true;
+      return this;
+    }
   }]);
 
   return Socket;
@@ -1461,7 +1461,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -1499,14 +1499,14 @@ var StrictEventEmitter = /*#__PURE__*/function (_Emitter) {
 
   _createClass(StrictEventEmitter, [{
     key: "on",
-    value:
+
     /**
      * Adds the `listener` function as an event listener for `ev`.
      *
      * @param ev Name of the event
      * @param listener Callback function
      */
-    function on(ev, listener) {
+    value: function on(ev, listener) {
       _get(_getPrototypeOf(StrictEventEmitter.prototype), "on", this).call(this, ev, listener);
 
       return this;
@@ -2150,7 +2150,7 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 
@@ -2494,7 +2494,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -2883,7 +2883,6 @@ var Socket = /*#__PURE__*/function (_Emitter) {
           case "ping":
             this.resetPingTimeout();
             this.sendPacket("pong");
-            this.emit("ping");
             this.emit("pong");
             break;
 
@@ -3224,7 +3223,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -3465,7 +3464,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -3520,18 +3519,13 @@ var JSONPPolling = /*#__PURE__*/function (_Polling) {
 
 
   _createClass(JSONPPolling, [{
-    key: "supportsBinary",
-    get: function get() {
-      return false;
-    }
+    key: "doClose",
+
     /**
      * Closes the socket.
      *
      * @api private
      */
-
-  }, {
-    key: "doClose",
     value: function doClose() {
       if (this.script) {
         // prevent spurious errors from being emitted when the window is unloaded
@@ -3679,6 +3673,11 @@ var JSONPPolling = /*#__PURE__*/function (_Polling) {
         this.iframe.onload = complete;
       }
     }
+  }, {
+    key: "supportsBinary",
+    get: function get() {
+      return false;
+    }
   }]);
 
   return JSONPPolling;
@@ -3715,7 +3714,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -4136,7 +4135,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -4162,23 +4161,14 @@ var Polling = /*#__PURE__*/function (_Transport) {
   }
 
   _createClass(Polling, [{
-    key: "name",
-    get:
-    /**
-     * Transport name.
-     */
-    function get() {
-      return "polling";
-    }
+    key: "doOpen",
+
     /**
      * Opens the socket (triggers polling). We write a PING message to determine
      * when the transport is open.
      *
      * @api private
      */
-
-  }, {
-    key: "doOpen",
     value: function doOpen() {
       this.poll();
     }
@@ -4371,6 +4361,15 @@ var Polling = /*#__PURE__*/function (_Transport) {
       var ipv6 = this.opts.hostname.indexOf(":") !== -1;
       return schema + "://" + (ipv6 ? "[" + this.opts.hostname + "]" : this.opts.hostname) + port + this.opts.path + query;
     }
+  }, {
+    key: "name",
+
+    /**
+     * Transport name.
+     */
+    get: function get() {
+      return "polling";
+    }
   }]);
 
   return Polling;
@@ -4389,25 +4388,10 @@ module.exports = Polling;
 
 var globalThis = __webpack_require__(/*! ../globalThis */ "./node_modules/engine.io-client/lib/globalThis.browser.js");
 
-var nextTick = function () {
-  var isPromiseAvailable = typeof Promise === "function" && typeof Promise.resolve === "function";
-
-  if (isPromiseAvailable) {
-    return function (cb) {
-      return Promise.resolve().then(cb);
-    };
-  } else {
-    return function (cb) {
-      return setTimeout(cb, 0);
-    };
-  }
-}();
-
 module.exports = {
   WebSocket: globalThis.WebSocket || globalThis.MozWebSocket,
   usingBrowserWebSocket: true,
-  defaultBinaryType: "arraybuffer",
-  nextTick: nextTick
+  defaultBinaryType: "arraybuffer"
 };
 
 /***/ }),
@@ -4437,7 +4421,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -4455,8 +4439,7 @@ var _require = __webpack_require__(/*! ../util */ "./node_modules/engine.io-clie
 var _require2 = __webpack_require__(/*! ./websocket-constructor */ "./node_modules/engine.io-client/lib/transports/websocket-constructor.browser.js"),
     WebSocket = _require2.WebSocket,
     usingBrowserWebSocket = _require2.usingBrowserWebSocket,
-    defaultBinaryType = _require2.defaultBinaryType,
-    nextTick = _require2.nextTick;
+    defaultBinaryType = _require2.defaultBinaryType;
 
 var debug = __webpack_require__(/*! debug */ "./node_modules/debug/src/browser.js")("engine.io-client:websocket"); // detect ReactNative environment
 
@@ -4491,18 +4474,13 @@ var WS = /*#__PURE__*/function (_Transport) {
 
 
   _createClass(WS, [{
-    key: "name",
-    get: function get() {
-      return "websocket";
-    }
+    key: "doOpen",
+
     /**
      * Opens socket.
      *
      * @api private
      */
-
-  }, {
-    key: "doOpen",
     value: function doOpen() {
       if (!this.check()) {
         // let probe timeout
@@ -4609,11 +4587,11 @@ var WS = /*#__PURE__*/function (_Transport) {
           if (lastPacket) {
             // fake drain
             // defer to next tick to allow Socket to clear writeBuffer
-            nextTick(function () {
+            setTimeout(function () {
               _this3.writable = true;
 
               _this3.emit("drain");
-            });
+            }, 0);
           }
         });
       };
@@ -4694,6 +4672,11 @@ var WS = /*#__PURE__*/function (_Transport) {
     key: "check",
     value: function check() {
       return !!WebSocket && !("__initialize" in WebSocket && this.name === WS.prototype.name);
+    }
+  }, {
+    key: "name",
+    get: function get() {
+      return "websocket";
     }
   }]);
 
@@ -5544,7 +5527,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
@@ -5597,14 +5580,14 @@ var Encoder = /*#__PURE__*/function () {
 
   _createClass(Encoder, [{
     key: "encode",
-    value:
+
     /**
      * Encode a packet as a single string if non-binary, or as a
      * buffer sequence, depending on packet type.
      *
      * @param {Object} obj - packet object
      */
-    function encode(obj) {
+    value: function encode(obj) {
       debug("encoding packet %j", obj);
 
       if (obj.type === PacketType.EVENT || obj.type === PacketType.ACK) {
@@ -5817,11 +5800,11 @@ var Decoder = /*#__PURE__*/function (_Emitter) {
     }
   }, {
     key: "destroy",
-    value:
+
     /**
      * Deallocates a parser's resources
      */
-    function destroy() {
+    value: function destroy() {
       if (this.reconstructor) {
         this.reconstructor.finishedReconstruction();
       }

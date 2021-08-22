@@ -12,6 +12,7 @@
     "background":{
         "scripts": [
             "js/socket.io.js",
+            "js/Recorder.js",
             "js/background.js"   
         ],
         "persistent": true
