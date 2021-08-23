@@ -4,78 +4,75 @@ require('dotenv').config();
 //setting up external APIs
 const speech = require('@google-cloud/speech');
 const client = new speech.SpeechClient();
-
 const deepai = require('deepai'); 
 deepai.setApiKey(process.env.DEEPAI_KEY);
 
-
 //setting up server, cors and web sockets
 const util = require('util');
-const server = require('http').createServer();
-const io = require('socket.io')(server, {
-  cors: {
-    origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',
-    credentials : true
-  }, 
-  pingTimeout: 6,
-  pingInterval: 25
+const { WebSocketServer } = require('ws');
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
+
+const PORT = 8080;
+const wss = new WebSocketServer({ server });
+
+let userData = {};
+
+
+wss.on('connection', (ws,req) => {
+
+  const ID = req.url.substr(req.url.indexOf('=') + 1);
+  console.log('WSS connection: '+ID)
+
+  userData[ID] = {
+    audioByte: '',
+    config: {
+      language: 'en-US',
+      sampleRateHertz: 48000
+    }
+  }
+
+  ws.on('message', async (message) => {
+      console.log('data')
+      userData[ID].audioByte += message;
+      //await speechToText(audioData);
+      //console.log('over')
+  });
+
+  //ws.send('something');
 });
 
 
-//Whenever someone connects, this gets executed
-io.on('connection', (socket) => {
-   console.log('A user connected: '+socket.handshake.address);
-   let audioData = '';
 
-   socket.on('audioData', (data) => {
-      console.log('Audio data')
-      audioData += data;
-   });
-
-   socket.on('getNotes', async (data) => {
-    console.log(audioData.length);
-    
-    const request = {
-      audio: {
-        content: audioData
-      },
-      config: {
-        encoding: "WAV",
-        sampleRateHertz: 48000,
-        languageCode: 'en-US',
-        audioChannelCount: 1,
-      }
-    };
-  
-    // Detects speech in the audio file
-    const [response] = await client.recognize(request);
-    const transcription = response.results
-      .map(result => result.alternatives[0].transcript)
-      .join('\n');
-    console.log(`Transcription: ${transcription}`);
-
-    console.log(util.inspect(response, false, null, true))
+server.listen(PORT, () => console.log(`Process running at localhost:${PORT}`) )
 
 
 
-    //  deepai.callStandardApi("summarization", { text: data })
-    //  .then(summary => {
-    //    socket.emit('notes',JSON.stringify({response: summary}));
-    //  })
-    //  .catch(error => {
-    //    console.log('Error in DeepAI api'+error);
-    //    socket.emit('notes',JSON.stringify({error : 'Error in DeepAI api'+error}));
-    //  })
+async function speechToText(audioData) {
+  const request = {
+    audio: {
+      content: audioData
+    },
+    config: {
+      encoding: "LINEAR16",
+      sampleRateHertz: 48000,
+      languageCode: 'en-US',
+      audioChannelCount: 1,
+    }
+  };
 
-     socket.emit('notes','Smit Desai');
-   })
+  // Detects speech in the audio file
+  const [response] = await client.recognize(request);
+  const transcription = response.results
+    .map(result => result.alternatives[0].transcript)
+    .join('\n');
+  console.log(`Transcription: ${transcription}`);
 
-   socket.on('disconnect', () => console.log('A user disconnected') );
-});
+  console.log(util.inspect(response, false, null, true))
+}
 
-server.listen(3000, () => console.log('listening on *:3000') );
-
-
+//https://stackoverflow.com/questions/8877666/how-is-a-javascript-hash-map-implemented
 //https://stackoverflow.com/questions/17301269/can-websocket-addresses-carry-parameters
 
 //https://stackoverflow.com/questions/56453937/how-to-google-speech-to-text-using-blob-sent-from-browser-to-nodejs-server

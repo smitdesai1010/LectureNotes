@@ -1,4 +1,5 @@
-const HOST = 'ws://localhost:3000';
+const uniqueID = Date.now()%10000+(Math.random()*1000).toPrecision(3);
+const HOST = 'ws://localhost:8080?ID='+uniqueID;
 let socket = null;
 let currRecodingTabID = null;
 let currTabRecordingStatus = false;
@@ -6,7 +7,7 @@ let rec = null;
 let intervalID = null;
 let mediaStream = null;
 let audio = new Audio(); //tabCapture stops the audio to the user, so playing the audio is not      
-                         //via js Object using the same stream   
+                         //via js audio object using the same stream   
 
 
 //ToDO : stop recording when a tab closes without clicking on stop record
@@ -21,7 +22,7 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
         response({recordingStatus : currTabRecordingStatus});
     }
 
-    else if (request.event === 'start') {
+    else if (request.event === 'startRecording') {
 
         if (request.Id == undefined) {
             alert('INVALID URL');
@@ -50,48 +51,48 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
         response({}); //success - empty object
     }
 
-    else if (request.event === 'stop') { 
+    else if (request.event === 'stopRecording') { 
         stopRecording();
         response({}); //success - empty object
     }
 
     else if (request.event === 'getNotes') {
-        // //check if socket is connected or not
+        //check if socket is connected or not
         if (socket == null) {
             alert('Recording not started');
             reponse({error : 'Recording not started'});
             return;
         }
 
-        // //stop Recording
+        //stop Recording
         if (currRecodingTabID !== null)
             chrome.tabs.sendMessage(currRecodingTabID, {event: "stopRecording"}, ()=>{} );
 
-        socket.emit('getNotes', '');
+        // socket.emit('getNotes', '');
         
-        socket.on('notes', data => {
+        // socket.on('notes', data => {
             
-            data = JSON.parse(data);
+        //     data = JSON.parse(data);
 
-            if ("error" in data) {
-                alert(data.error);
-                reponse({error : data.error});
-            }
+        //     if ("error" in data) {
+        //         alert(data.error);
+        //         reponse({error : data.error});
+        //     }
 
-            else {
-                let blob = new Blob([data], {type: "text/plain"});
-                const date = new Date();
-                const name = `Notes-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        //     else {
+        //         let blob = new Blob([data], {type: "text/plain"});
+        //         const date = new Date();
+        //         const name = `Notes-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
     
-                chrome.downloads.download({
-                    url: URL.createObjectURL(blob),
-                    filename: name+'.txt' 
-                });
+        //         chrome.downloads.download({
+        //             url: URL.createObjectURL(blob),
+        //             filename: name+'.txt' 
+        //         });
     
-                response({}); //success - empty object                
-            }
+        //         response({}); //success - empty object                
+        //     }
 
-        })
+        // })
     }
     
     return true; //making responses asynchronous
@@ -101,23 +102,16 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 async function startRecording() {
 
     if (socket === null) {
-         socket = io(HOST, {reconnection: false}); //Note: if cannot connect, it will keep polling and throwing errors, but wont stop the execution of script
-         await new Promise( (resolve, reject) => {  
-                socket.on('connect', () => {
-                console.log('Socket connected: '+socket.id);
-                resolve();
-            })
-         }) 
-
-         socket.on('error', (err) => {
-            if (err.description) throw err.description;
-            else throw err; // Or whatever you want to do
-          });
+         socket = new WebSocket(HOST); 
          
-         socket.on('disconnect', (reason) => console.log('Socket disconnected: '+reason))
+         await new Promise((resolve, reject) => {                 
+            socket.onopen = () => {
+                console.log('Socket connected');
+                resolve();  
+            }})
     }
 
-    mediaStream = await new Promise( (resolve, reject) => {
+    mediaStream = await new Promise((resolve, reject) => {
         chrome.tabCapture.capture({audio: true}, stream => {
             resolve(stream);
         });
@@ -133,23 +127,27 @@ async function startRecording() {
     const ctxInput = audioContext.createMediaStreamSource(mediaStream);
     rec = new Recorder(ctxInput, { numChannels:1 });
     rec.record();
-
-    intervalID = setInterval(() => {        
+    
+    intervalID = setInterval(() => {          //send a base64 encoded audioByte data every 3 secs 
         rec.exportWAV( blob => {
 
             let reader = new FileReader();
             reader.readAsDataURL(blob); 
 
             reader.onloadend = () => {
-                console.log(blob);
-                socket.emit('audioData', "reader.result");          
+                const str = reader.result.substr(reader.result.indexOf(',')+1);
+                socket.send(str);          
             }
         })
-    },5000)
+    },3000)
 
-    console.log('SampleRate: '+audioContext.sampleRate);    
 
     //---------------------------------------------------------------------------
+    console.log('SampleRate: '+audioContext.sampleRate);    
+
+    socket.onmessage = (message) => {
+        console.log('received: %s', message)
+    };
 
     audio.srcObject = mediaStream;  //chrome tab capture stops audio, so playing it via a background object
     audio.play();

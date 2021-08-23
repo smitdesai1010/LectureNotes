@@ -20,7 +20,7 @@ document.getElementById("microphone")
     .addEventListener('click', async () => {
 
         const obj = {
-            event: isRecording ? 'stop' : 'start',
+            event: isRecording ? 'stopRecording' : 'startRecording',
             Id: currId
         }
 

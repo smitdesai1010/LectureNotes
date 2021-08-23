@@ -8,7 +8,9 @@
     "cors": "^2.8.5",
     "deepai": "^1.0.17",
     "dotenv": "^10.0.0",
-    "socket.io": "^4.1.2"
+    "express": "^4.17.1",
+    "socket.io": "^4.1.2",
+    "ws": "^8.2.0"
   },
   "devDependencies": {},
   "scripts": {
