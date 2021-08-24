@@ -1,5 +1,5 @@
-const uniqueID = Date.now()%10000+(Math.random()*1000).toPrecision(3);
-const HOST = 'ws://localhost:8080?ID='+uniqueID;
+const uniqueID = Date.now()%10000+(Math.random()*1000).toPrecision(3); //FIX !!! return float values
+const HOST = 'localhost:8080';
 let socket = null;
 let currRecodingTabID = null;
 let currTabRecordingStatus = false;
@@ -67,8 +67,44 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
         //stop Recording
         if (currRecodingTabID !== null)
             chrome.tabs.sendMessage(currRecodingTabID, {event: "stopRecording"}, ()=>{} );
+        //stopRecording(); 
 
-        // socket.emit('getNotes', '');
+        fetch('http://'+HOST+'/', {
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'application/json'
+                },
+            method: "POST",
+            body: JSON.stringify({
+                ID: uniqueID,
+                config: {
+                    encoding: "LINEAR16",
+                    sampleRateHertz: new window.AudioContext().sampleRate,
+                    languageCode: 'en-US',
+                    audioChannelCount: 1,
+                }
+            })
+        })
+        .then(res => res.text())
+        .then(text => {
+                let blob = new Blob([text], {type: "text/plain"});
+                const date = new Date();
+                const name = `Notes-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+                console.log(URL.createObjectURL(blob));
+
+                chrome.downloads.download({
+                    url: URL.createObjectURL(blob),
+                    filename: name+'.txt' 
+                });
+    
+                response({}); //success - empty object 
+        })
+        .catch(err => {
+            console.log('Error in getting notes '+err);
+            alert('Error in getting notes, please try again');
+            //reponse({error : 'Error in getting notes '+err});
+        })
         
         // socket.on('notes', data => {
             
@@ -102,7 +138,7 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 async function startRecording() {
 
     if (socket === null) {
-         socket = new WebSocket(HOST); 
+         socket = new WebSocket('ws://'+HOST+'?ID='+uniqueID); 
          
          await new Promise((resolve, reject) => {                 
             socket.onopen = () => {
@@ -143,8 +179,6 @@ async function startRecording() {
 
 
     //---------------------------------------------------------------------------
-    console.log('SampleRate: '+audioContext.sampleRate);    
-
     socket.onmessage = (message) => {
         console.log('received: %s', message)
     };

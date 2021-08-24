@@ -9,6 +9,7 @@ deepai.setApiKey(process.env.DEEPAI_KEY);
 
 //setting up server, cors and web sockets
 const util = require('util');
+const cors = require('cors');
 const { WebSocketServer } = require('ws');
 const express = require('express');
 const app = express();
@@ -18,7 +19,39 @@ const PORT = 8080;
 const wss = new WebSocketServer({ server });
 
 let userData = {};
+//set cors opqque for other users
+app.use(cors({
+    origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',
+    credentials : true
+}));
 
+app.use(express.json());
+app.post('/', (req, res) => {
+
+  console.log(util.inspect(req.body, false, null, true))
+  const ID = req.body.ID;
+  const config = req.body.config == null ? userData[ID].config : req.body.config;
+
+  //speechToText(userData[ID].audioByte);
+    
+  client.recognize({
+    audio: {
+      content: userData[ID].audioByte
+    },
+    config: config
+  })
+  .then( ([response]) => {
+    const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
+    console.log(`Transcription: ${transcription}`);
+    console.log(util.inspect(response, false, null, true))
+    res.send(transcription)
+  })
+  
+})
+
+app.all('/', (req, res) => {
+  res.send('Invalid Route');
+})
 
 wss.on('connection', (ws,req) => {
 
@@ -34,10 +67,7 @@ wss.on('connection', (ws,req) => {
   }
 
   ws.on('message', async (message) => {
-      console.log('data')
       userData[ID].audioByte += message;
-      //await speechToText(audioData);
-      //console.log('over')
   });
 
   //ws.send('something');
