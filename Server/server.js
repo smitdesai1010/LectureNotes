@@ -19,6 +19,8 @@ const PORT = 8080;
 const wss = new WebSocketServer({ server });
 
 let userData = {};
+let userID = 0;
+
 //set cors opqque for other users
 app.use(cors({
     origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',
@@ -30,7 +32,12 @@ app.post('/', (req, res) => {
 
   console.log(util.inspect(req.body, false, null, true))
   const ID = req.body.ID;
-  const config = req.body.config == null ? userData[ID].config : req.body.config;
+  const config = req.body.config == null ? userData[ID].config : req.body.config;   //use default config if not provided
+
+  if (ID == null) {
+    res.sendStatus(404);
+    return;
+  }
 
   //speechToText(userData[ID].audioByte);
     
@@ -55,7 +62,9 @@ app.all('/', (req, res) => {
 
 wss.on('connection', (ws,req) => {
 
-  const ID = req.url.substr(req.url.indexOf('=') + 1);
+  const ID = userID++;
+  ws.send(ID);
+
   console.log('WSS connection: '+ID)
 
   userData[ID] = {
@@ -69,8 +78,7 @@ wss.on('connection', (ws,req) => {
   ws.on('message', async (message) => {
       userData[ID].audioByte += message;
   });
-
-  //ws.send('something');
+  
 });
 
 

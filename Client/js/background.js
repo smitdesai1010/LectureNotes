@@ -1,4 +1,4 @@
-const uniqueID = Date.now()%10000+(Math.random()*1000).toPrecision(3); //FIX !!! return float values
+const ID = null;
 const HOST = 'localhost:8080';
 let socket = null;
 let currRecodingTabID = null;
@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
                 },
             method: "POST",
             body: JSON.stringify({
-                ID: uniqueID,
+                ID: ID,
                 config: {
                     encoding: "LINEAR16",
                     sampleRateHertz: new window.AudioContext().sampleRate,
@@ -138,13 +138,18 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 async function startRecording() {
 
     if (socket === null) {
-         socket = new WebSocket('ws://'+HOST+'?ID='+uniqueID); 
+         socket = new WebSocket('ws://'+HOST); 
          
          await new Promise((resolve, reject) => {                 
             socket.onopen = () => {
                 console.log('Socket connected');
                 resolve();  
-            }})
+            }
+        })
+
+        socket.onmessage(userID => {
+            ID = userID;
+        })    
     }
 
     mediaStream = await new Promise((resolve, reject) => {
