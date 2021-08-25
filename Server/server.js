@@ -63,7 +63,7 @@ app.all('/', (req, res) => {
 wss.on('connection', (ws,req) => {
 
   const ID = userID++;
-  ws.send(ID);
+  ws.send(ID);  //sending ID to the client
 
   console.log('WSS connection: '+ID)
 
@@ -75,7 +75,7 @@ wss.on('connection', (ws,req) => {
     }
   }
 
-  ws.on('message', async (message) => {
+  ws.on('message', (message) => {
       userData[ID].audioByte += message;
   });
   
