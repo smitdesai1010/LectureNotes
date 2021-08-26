@@ -62,6 +62,7 @@ app.post('/getNotes', (req, res) => {
           res.sendStatus(404);
       })
 
+      //reset transcription
       userData[ID].transcription = '';
 })
 
@@ -82,17 +83,17 @@ wss.on('connection', (ws,req) => {
     userData[ID].config.language = lang;
 
   ws.on('message', (message) => {
-    console.log('Data received from ID: '+ID);
+      console.log('Data received from ID: '+ID);
 
-    client.recognize({
-      audio: { content: message.toString() },
-      config: userData[ID].config
-    })
-    .then( ([response]) => {
-      const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
-      console.log(`Transcription: ${transcription}`);
-      userData[ID].transcription += transcription;
-    })
+      client.recognize({
+        audio: { content: message.toString() },
+        config: userData[ID].config
+      })
+      .then( ([response]) => {
+        const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
+        console.log(`Transcription: ${transcription}`);
+        userData[ID].transcription += transcription;
+      })
   });
   
 });

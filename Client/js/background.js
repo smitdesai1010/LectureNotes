@@ -70,16 +70,8 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
     }
 
     else if (request.event === 'getNotes') {
-
-        //check if socket is connected or not
-        if (socket == null) {
-            alert('Recording not started');
-            reponse({error : 'Recording not started'});
-            return;
-        }
-
         getNotes();
-        response({});
+        response({}); //success - empty object
     }
 
 
@@ -151,24 +143,17 @@ function stopRecording() {
 
     if (audioRecorder != null) {
         audioRecorder.exportWAV( blob => {        //sending the last buffered audio
-            let reader = new FileReader();
-            reader.readAsDataURL(blob); 
+            socket.send(blob);   
+            
+            audioRecorder.clear();  //close recorder
+            audioRecorder.stop();
+            audioRecorder = null;
 
-            reader.onloadend = () => {
-                const str = reader.result.substr(reader.result.indexOf(',')+1);
-                socket.send(str);          
-            }
-            audioRecorder.clear();
+            socket.close(); //close socket
+            socket = null;
         })
-
-        audioRecorder.stop();
-        audioRecorder = null;
     }
     
-    if (socket == null) {
-        socket.close();
-        socket = null;
-    }
 
     clearInterval(intervalID);
     currRecodingTabID = null;
@@ -178,7 +163,13 @@ function stopRecording() {
 
 
 function getNotes() {
-        
+    
+        //check if socket is connected or not
+        if (socket == null) {
+            alert('Recording not started');
+            return;
+        }
+
         stopRecording(); 
         
         fetch('http://'+HOST+'/getNotes', {
