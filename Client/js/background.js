@@ -1,42 +1,66 @@
 const HOST = 'localhost:8080';
-let ID = null;
+let clientID = null;
 let socket = null;
 let currRecodingTabID = null;
 let currTabRecordingStatus = false;
-let rec = null;
+let audioRecorder = null;
 let intervalID = null;
 let mediaStream = null;
 let audio = new Audio(); //tabCapture stops the audio to the user, so playing the audio is not      
                          //via js audio object using the same stream   
 
 
+//open socket on recording, close on stops
+//cannot allow to change audio language while recording
+
+fetch(`http://${HOST}/register`, {
+    headers: {
+        'Accept': 'text/plain',
+        'Content-Type': 'application/json'
+    },
+    method: 'POST',
+    body: JSON.stringify({
+        config: {
+            encoding: "LINEAR16",
+            sampleRateHertz: new window.AudioContext().sampleRate,
+            languageCode: 'en-US',
+            audioChannelCount: 1,
+        }
+    })})
+.then(res => res.text())
+.then(text => clientID = text)
+.catch(err => console.log('Cannot register'))
+
+
 //ToDO : stop recording when a tab closes without clicking on stop record
 // alert user if the server is down
+
+//can make this sync
 chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 
     if (request.event == 'getRecordingStatus') {
 
-        if (currRecodingTabID !== request.Id)   //other tab is recording
+        if (currRecodingTabID !== request.tabId)   //other tab is recording
             response({recordingStatus : false})
         else
             response({recordingStatus : currTabRecordingStatus});
     }
 
     else if (request.event === 'startRecording') {
-
-        if (request.Id == undefined) {
-            alert('INVALID URL');
-            response({error : 'Invalid URL'});
+        
+        if (clientID == null) {
+            alert('Cannot connect to server. Please try again in a few seconds')
+            response({error : 'clientID is null, cannot connect to server'})
             return true;
-        }    
-          
-        else if (currRecodingTabID !== null && currRecodingTabID !== request.Id) {
+        }
+        
+        if (currRecodingTabID !== null && currRecodingTabID !== request.tabId) {
             alert('Recording from multiple tabs at once not allowed')
             response({error : 'Recording from multiple tabs at once not allowed'})
             return true;
         }
 
-        startRecording(request.Id);   
+        startRecording(request.tabId);   
         response({}); //success - empty object
     }
 
@@ -64,23 +88,20 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 
 
 async function startRecording(tabID) {
-
+    
     currRecodingTabID = tabID; 
     currTabRecordingStatus = true;
 
     if (socket === null) {
-         socket = new WebSocket('ws://'+HOST); 
+
+        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&language=en-US`); 
          
-         await new Promise((resolve, reject) => {                 
+        await new Promise((resolve, reject) => {                 
             socket.onopen = () => {
                 console.log('Socket connected');
                 resolve();  
             }
         }).catch(err => console.log('Error in opening socket :'+err))
-
-        socket.onmessage = (message) => {
-            ID = message.data;
-        }
     }
 
     mediaStream = await new Promise((resolve, reject) => {
@@ -88,6 +109,7 @@ async function startRecording(tabID) {
             resolve(stream);
         });
     }).catch(err => console.log('Error in getting media stream: ' + err))
+
 
     if (mediaStream == null) {
         alert('Unable to capture audio. Please try again !!');
@@ -97,11 +119,11 @@ async function startRecording(tabID) {
     //-------------------------------------------------
     const audioContext = new window.AudioContext();
     const ctxInput = audioContext.createMediaStreamSource(mediaStream);
-    rec = new Recorder(ctxInput, { numChannels:1 });
-    rec.record();
+    audioRecorder = new Recorder(ctxInput, { numChannels:1 });
+    audioRecorder.record();
     
     intervalID = setInterval(() => {          //send a base64 encoded audioByte data every 3 secs 
-        rec.exportWAV( blob => {
+        audioRecorder.exportWAV( blob => {
 
             let reader = new FileReader();
             reader.readAsDataURL(blob); 
@@ -111,7 +133,8 @@ async function startRecording(tabID) {
                 socket.send(str);          
             }
         })
-    },3000)
+        audioRecorder.clear();
+    },14000)
     //---------------------------------------------------------------------------
 
     audio.srcObject = mediaStream;  //chrome tab capture stops audio, so playing it via a background object
@@ -126,8 +149,8 @@ function stopRecording() {
         mediaStream = null;
     }
 
-    if (rec != null) {
-        rec.exportWAV( blob => {        //sending the last buffered audio
+    if (audioRecorder != null) {
+        audioRecorder.exportWAV( blob => {        //sending the last buffered audio
             let reader = new FileReader();
             reader.readAsDataURL(blob); 
 
@@ -135,12 +158,18 @@ function stopRecording() {
                 const str = reader.result.substr(reader.result.indexOf(',')+1);
                 socket.send(str);          
             }
+            audioRecorder.clear();
         })
 
-        rec.stop();
-        rec = null;
+        audioRecorder.stop();
+        audioRecorder = null;
     }
     
+    if (socket == null) {
+        socket.close();
+        socket = null;
+    }
+
     clearInterval(intervalID);
     currRecodingTabID = null;
     currTabRecordingStatus = false;
@@ -152,20 +181,14 @@ function getNotes() {
         
         stopRecording(); 
         
-        fetch('http://'+HOST+'/', {
+        fetch('http://'+HOST+'/getNotes', {
             headers: {
                 'Accept': 'text/plain',
                 'Content-Type': 'application/json'
                 },
             method: "POST",
             body: JSON.stringify({
-                ID: ID,
-                config: {
-                    encoding: "LINEAR16",
-                    sampleRateHertz: new window.AudioContext().sampleRate,
-                    languageCode: 'en-US',
-                    audioChannelCount: 1,
-                }
+                ID: clientID
             })
         })
         .then(res => res.text())
@@ -187,13 +210,4 @@ function getNotes() {
             alert('Error in getting notes, please try again');
         })
 }
-
-//https://stackoverflow.com/questions/50976084/how-do-i-stream-live-audio-from-the-browser-to-google-cloud-speech-via-socket-io
-//https://www.py4u.net/discuss/347448
-//https://stackoverflow.com/questions/51368252/setting-blob-mime-type-to-wav-still-results-in-webm
-
-
-//https://stackoverflow.com/questions/4845215/making-a-chrome-extension-download-a-file
-//https://stackoverflow.com/questions/57044074/with-google-cloud-speech-to-text-and-the-node-js-sdk-how-can-i-read-the-value-o
-
 

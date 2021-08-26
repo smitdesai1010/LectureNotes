@@ -10,7 +10,7 @@ let currId = await new Promise( (resolve, reject) => {         //get curr tab's 
 }) 
 
 let isRecording = await new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({event : 'getRecordingStatus', Id: currId}, (res) => {
+    chrome.runtime.sendMessage({event : 'getRecordingStatus', tabId: currId}, (res) => {
         document.getElementById("mic-icon").className = res.recordingStatus ? "fa fa-microphone fa-2x" : "fa fa-microphone-slash fa-2x";
         resolve(res.recordingStatus)
     });
@@ -19,9 +19,14 @@ let isRecording = await new Promise((resolve, reject) => {
 document.getElementById("microphone")
     .addEventListener('click', async () => {
 
+        if (currId == null) {
+            alert('INVALID URL');
+            return;
+        }
+
         const obj = {
             event: isRecording ? 'stopRecording' : 'startRecording',
-            Id: currId
+            tabId: currId
         }
 
         chrome.runtime.sendMessage(obj, (response) => {
