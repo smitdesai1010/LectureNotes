@@ -60,8 +60,8 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
             return true;
         }
 
-        startRecording(request.tabId);   
-        response({}); //success - empty object
+        response({}); //success - Recording can start - empty object
+        startRecording(request.tabId, request.languageCode);   
     }
 
     else if (request.event === 'stopRecording') { 
@@ -79,14 +79,14 @@ chrome.runtime.onMessage.addListener( async (request, sender, response) => {
 })
 
 
-async function startRecording(tabID) {
+async function startRecording(tabID, languageCode) {
     
     currRecodingTabID = tabID; 
     currTabRecordingStatus = true;
 
     if (socket === null) {
 
-        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&language=en-US`); 
+        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&language=${languageCode}`); 
          
         await new Promise((resolve, reject) => {                 
             socket.onopen = () => {
@@ -136,6 +136,8 @@ async function startRecording(tabID) {
 
 function stopRecording() {
     
+    clearInterval(intervalID);
+
     if (mediaStream != null) {  //since mediaStream is setuped asychromously, this maybe null if the user suddenly clicks on stop recording   
         mediaStream.getTracks().forEach(track => track.stop());
         mediaStream = null;
@@ -143,7 +145,14 @@ function stopRecording() {
 
     if (audioRecorder != null) {
         audioRecorder.exportWAV( blob => {        //sending the last buffered audio
-            socket.send(blob);   
+            
+            let reader = new FileReader();
+            reader.readAsDataURL(blob); 
+
+            reader.onloadend = () => {
+                const str = reader.result.substr(reader.result.indexOf(',')+1);
+                socket.send(str);          
+            }
             
             audioRecorder.clear();  //close recorder
             audioRecorder.stop();
@@ -154,8 +163,6 @@ function stopRecording() {
         })
     }
     
-
-    clearInterval(intervalID);
     currRecodingTabID = null;
     currTabRecordingStatus = false;
     audio.pause();
@@ -164,12 +171,6 @@ function stopRecording() {
 
 function getNotes() {
     
-        //check if socket is connected or not
-        if (socket == null) {
-            alert('Recording not started');
-            return;
-        }
-
         stopRecording(); 
         
         fetch('http://'+HOST+'/getNotes', {
@@ -187,8 +188,6 @@ function getNotes() {
                 let blob = new Blob([text], {type: "text/plain"});
                 const date = new Date();
                 const name = `Notes-${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-
-                console.log(URL.createObjectURL(blob));
 
                 chrome.downloads.download({
                     url: URL.createObjectURL(blob),

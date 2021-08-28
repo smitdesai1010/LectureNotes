@@ -22,6 +22,12 @@ let userData = {};
 let userID = 0;
 
 //set cors opqque for other users
+//use redis 
+//implement heartbeat mechanism for websockets
+//add multiple language support
+//work on API responses
+//websocket sends as binary data, so dont do blob to base64 on client, do it on server
+
 app.use(cors({
     origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',
     credentials : true
@@ -53,9 +59,13 @@ app.post('/getNotes', (req, res) => {
       }
       console.log(userData[ID].transcription);
       
-      deepai.callStandardApi("summarization", { text: data })
+      deepai.callStandardApi("summarization", { 
+        text: userData[ID].transcription, 
+      }) 
       .then(summary => {
-          res.send(summary);
+          const notesAndTranscription = `NOTES\n-----------\n${summary.output}\n\n\n` +  
+                                        `TRANSCRIPTION\n-----------\n${userData[ID].transcription}`;
+          res.send(notesAndTranscription);
       })
       .catch(error => {
           console.log('Error in DeepAI api'+error);
@@ -81,6 +91,7 @@ wss.on('connection', (ws,req) => {
 
   if (lang != null)
     userData[ID].config.language = lang;
+    console.log(userData[ID].config)
 
   ws.on('message', (message) => {
       console.log('Data received from ID: '+ID);
