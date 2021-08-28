@@ -1,1 +1,1 @@
-# LectureNotes.AI
+# LectureNotes
