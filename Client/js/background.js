@@ -183,8 +183,12 @@ function stopRecording() {
 
 function getNotes() {
     
+        if (clientID == null) {
+            alert('Server is down, please contact the developer for help');
+            return;
+        }
+
         stopRecording(); 
-        
         fetch('http://'+HOST+'/getNotes', {
             headers: {
                 'Accept': 'text/plain',
@@ -195,7 +199,19 @@ function getNotes() {
                 ID: clientID
             })
         })
-        .then(res => res.text())
+        .then(res => {
+            if (res.status !== 200 && res !== 500) {
+                alert('Error in getting Notes');
+                throw error('Status code: ' + res.status);
+            }
+            
+            if (res.status == 500) {
+                alert('Cannot perform summarization, downloading transcription');
+                return res.text();
+            }
+
+            return res.text()
+        })
         .then(text => {
                 let blob = new Blob([text], {type: "text/plain"});
                 const date = new Date();

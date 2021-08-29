@@ -25,7 +25,7 @@ let userID = 0;
 //use redis 
 //implement heartbeat mechanism for websockets
 //add multiple language support   //done
-//work on API responses 
+//work on API responses   //done
 //identify socket close     //done
 //polling for client registration //done
 
@@ -46,15 +46,15 @@ app.post('/register', (req, res) => {
       }
       console.log('User registered: '+ID)
 
-      //work on this
-      res.send(ID+'');
+      res.set('Content-Type', 'text/plain');
+      res.status(200).send(ID+'');  //express assumes this ID is a statusCode and throws a depreciation error
 })
 
 app.post('/getNotes', (req, res) => {
       const ID = req.body.ID;
 
       if (ID == null) {
-        res.sendStatus(404);
+        res.status(400).send('The client ID is null');
         return;
       }
 
@@ -66,13 +66,11 @@ app.post('/getNotes', (req, res) => {
                                       `TRANSCRIPTION\n-----------\n${userData[ID].transcription}`;
           
           res.send(notesAndTranscription);
-
-          //reset transcription
           userData[ID].transcription = '';
       })
       .catch(error => {
           console.log('Error in DeepAI api'+error);
-          res.sendStatus(404);
+          res.status(500).send('Cannot to summarize text.\n Transcription \n'+userData[ID].transcription);
       })
 })
 
