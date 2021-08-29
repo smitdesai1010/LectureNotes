@@ -24,9 +24,10 @@ let userID = 0;
 //set cors opqque for other users
 //use redis 
 //implement heartbeat mechanism for websockets
-//add multiple language support
-//work on API responses
-//websocket sends as binary data, so dont do blob to base64 on client, do it on server
+//add multiple language support   //done
+//work on API responses 
+//identify socket close     //done
+//polling for client registration //done
 
 app.use(cors({
     origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',
@@ -43,7 +44,6 @@ app.post('/register', (req, res) => {
         transcription: '',
         config: configration == null ? {language: 'en-US', sampleRateHertz: 48000} : configration
       }
-
       console.log('User registered: '+ID)
 
       //work on this
@@ -57,23 +57,23 @@ app.post('/getNotes', (req, res) => {
         res.sendStatus(404);
         return;
       }
-      console.log(userData[ID].transcription);
-      
-      deepai.callStandardApi("summarization", { 
-        text: userData[ID].transcription, 
-      }) 
+
+      deepai.callStandardApi("summarization", {text: userData[ID].transcription, }) 
       .then(summary => {
-          const notesAndTranscription = `NOTES\n-----------\n${summary.output}\n\n\n` +  
-                                        `TRANSCRIPTION\n-----------\n${userData[ID].transcription}`;
+          const notes = summary.output == '' ? 'Not enough data' : summary.output;
+          
+          let notesAndTranscription = `NOTES\n-----------\n${notes}\n\n\n` +  
+                                      `TRANSCRIPTION\n-----------\n${userData[ID].transcription}`;
+          
           res.send(notesAndTranscription);
+
+          //reset transcription
+          userData[ID].transcription = '';
       })
       .catch(error => {
           console.log('Error in DeepAI api'+error);
           res.sendStatus(404);
       })
-
-      //reset transcription
-      userData[ID].transcription = '';
 })
 
 app.all('/', (req, res) => {
@@ -86,12 +86,10 @@ wss.on('connection', (ws,req) => {
   const ID = clientData.ID;
   const lang = clientData.language;
 
-  console.log('WSS connection ID: '+ID)
-  //console.log(util.inspect(userData[ID], false, null, true))
+  console.log('Socket connected ID: '+ID)
 
   if (lang != null)
     userData[ID].config.language = lang;
-    console.log(userData[ID].config)
 
   ws.on('message', (message) => {
       console.log('Data received from ID: '+ID);
@@ -102,10 +100,14 @@ wss.on('connection', (ws,req) => {
       })
       .then( ([response]) => {
         const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
-        console.log(`Transcription: ${transcription}`);
+        //console.log(`Transcription: ${transcription}`);
         userData[ID].transcription += transcription;
       })
   });
+
+  ws.on('close', () => {
+    console.log('Socket disconnected ID: '+ID);
+  })
   
 });
 

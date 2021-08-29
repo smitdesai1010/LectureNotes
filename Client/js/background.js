@@ -10,10 +10,8 @@ let audio = new Audio(); //tabCapture stops the audio to the user, so playing th
                          //via js audio object using the same stream   
 
 
-//open socket on recording, close on stops
-//cannot allow to change audio language while recording
-
-fetch(`http://${HOST}/register`, {
+let registerationInterval = setInterval(() => {     //using polling for registeration
+    fetch(`http://${HOST}/register`, {
     headers: {
         'Accept': 'text/plain',
         'Content-Type': 'application/json'
@@ -27,16 +25,23 @@ fetch(`http://${HOST}/register`, {
             audioChannelCount: 1,
         }
     })})
-.then(res => res.text())
-.then(text => clientID = text)
-.catch(err => console.log('Cannot register'))
+    .then(res => {
+        if (res.status !== 200) 
+            throw error('Status code: ' + res.status);
+            
+        clearInterval(registerationInterval);
+        return res.text()
+    })
+    .then(text => clientID = text)
+    .catch(err => console.log('Cannot register: '+err))
+},10000)
+
+
 
 
 //ToDO : stop recording when a tab closes without clicking on stop record
-// alert user if the server is down
 
-//can make this sync
-chrome.runtime.onMessage.addListener( async (request, sender, response) => {
+chrome.runtime.onMessage.addListener( (request, sender, response) => {
 
     if (request.event == 'getRecordingStatus') {
 
@@ -84,16 +89,15 @@ async function startRecording(tabID, languageCode) {
     currRecodingTabID = tabID; 
     currTabRecordingStatus = true;
 
-    if (socket === null) {
+    if (clientID == null) {
+        alert('Server is down, please contact the developer for help');
+        return;
+    }
 
-        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&language=${languageCode}`); 
-         
-        await new Promise((resolve, reject) => {                 
-            socket.onopen = () => {
-                console.log('Socket connected');
-                resolve();  
-            }
-        }).catch(err => console.log('Error in opening socket :'+err))
+    if (socket === null) {
+        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&language=${languageCode}`);       
+        socket.onopen = () => console.log('Socket connected');
+        socket.onclose = () => console.log('Socket disconnected');
     }
 
     mediaStream = await new Promise((resolve, reject) => {
@@ -116,6 +120,12 @@ async function startRecording(tabID, languageCode) {
     
     intervalID = setInterval(() => {          //send a base64 encoded audioByte data every 3 secs 
         audioRecorder.exportWAV( blob => {
+
+            if (socket == null) {
+                alert('Connection problem. Please try again !!');
+                stopRecording();
+                return;
+            }
 
             let reader = new FileReader();
             reader.readAsDataURL(blob); 
@@ -145,21 +155,23 @@ function stopRecording() {
 
     if (audioRecorder != null) {
         audioRecorder.exportWAV( blob => {        //sending the last buffered audio
-            
+
             let reader = new FileReader();
             reader.readAsDataURL(blob); 
 
             reader.onloadend = () => {
                 const str = reader.result.substr(reader.result.indexOf(',')+1);
-                socket.send(str);          
+                
+                if (socket != null)
+                    socket.send(str);          
+                
+                audioRecorder.clear();  //close recorder
+                audioRecorder.stop();
+                audioRecorder = null;
+    
+                socket.close(); //close socket
+                socket = null;
             }
-            
-            audioRecorder.clear();  //close recorder
-            audioRecorder.stop();
-            audioRecorder = null;
-
-            socket.close(); //close socket
-            socket = null;
         })
     }
     
