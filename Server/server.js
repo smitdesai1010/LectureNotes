@@ -82,7 +82,12 @@ wss.on('connection', (ws,req) => {
 
   const clientData = queryString.parse(req.url.substr(req.url.indexOf('?')+1));
   const ID = clientData.ID;
-  const lang = clientData.language;
+  const lang = clientData.languageCode;
+
+  if (ID == null) {
+    ws.send('Invalid ID');
+    ws.terminate();
+  }
 
   console.log('Socket connected ID: '+ID)
 
@@ -100,6 +105,10 @@ wss.on('connection', (ws,req) => {
         const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
         //console.log(`Transcription: ${transcription}`);
         userData[ID].transcription += transcription;
+      })
+      .catch(err => {
+        console.log(`Error in transcription from ID: ${ID} \n`+err);
+        ws.send(err);
       })
   });
 

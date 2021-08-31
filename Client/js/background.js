@@ -95,7 +95,7 @@ async function startRecording(tabID, languageCode) {
     }
 
     if (socket === null) {
-        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&language=${languageCode}`);       
+        socket = new WebSocket(`ws://${HOST}?ID=${clientID}&languageCode=${languageCode}`);       
         socket.onopen = () => console.log('Socket connected');
         socket.onclose = () => console.log('Socket disconnected');
     }
