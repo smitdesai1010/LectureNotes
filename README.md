@@ -1,5 +1,5 @@
 
-![Logo](logo.jpg)
+![Logo](Assets/logo.jpg)
 
 
 It is a chrome extension that summarizes the audio from a chrome tab into text with support for multiple languages and is primarily intended
@@ -11,7 +11,15 @@ This application was developed after my friends complained how difficult it is t
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+<p float="left">
+  <img src="Assets/SS-1.jpg" />
+  <img src="Assets/SS-5.jpg" />
+</p>
+
+<p float="left">
+  <img src="Assets/SS-4.jpg" width="45%"/>
+  <img src="Assets/SS-3.jpg" width="45%"/>
+</p>
 
   
 ## API Reference
@@ -20,7 +28,7 @@ This application was developed after my friends complained how difficult it is t
 
 ```http
   POST /register
-  Returns a unique ID, which is used when sending audio. 
+  Return: [text/plain] unique ID, used for further communication. 
 
 ```
 | Parameter | Type     | Description                |
@@ -33,7 +41,7 @@ https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig
 
 ```http
   POST /getNotes
-  Returns the summarized text and transcription as text
+  Return: [text/plain] Summarized text and transcription 
 ```
 
 | Parameter | Type     | Description                       |
@@ -47,7 +55,7 @@ https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig
   Example: ws://LectureNotes:8080?ID=12&languageCode=hi-IN
   Note: Use native websockets
   
-  Only errors will be sent from server via Websocket
+  Return: [text/plain] errors, if any
 ```
 
 | QueryString Parameter | Type     | Description                       |
@@ -77,7 +85,7 @@ Pre-requirements:  node and npm
 ```bash 
    cd Server
    npm install      //Install dependencies
-   node server.js   //starts server on port 8080
+   npm start   //starts server 
 ```
 
 To start client (chrome-extension)
