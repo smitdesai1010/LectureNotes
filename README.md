@@ -12,8 +12,9 @@ This application was developed after my friends complained how difficult it is t
 ## Screenshots
 
 <p float="left">
-  <img src="Assets/SS-1.jpg" />
-  <img src="Assets/SS-5.jpg" />
+  <img src="Assets/SS-1.jpg" width="300" height="150"/>
+  <img src="Assets/SS-2.jpg" width="300" height="150"/>
+  <img src="Assets/SS-5.jpg" width="100" height="100"/>
 </p>
 
 <p float="left">
@@ -85,7 +86,7 @@ Pre-requirements:  node and npm
 ```bash 
    cd Server
    npm install      //Install dependencies
-   npm start   //starts server 
+   npm start        //starts server 
 ```
 
 To start client (chrome-extension)
@@ -101,11 +102,19 @@ To start client (chrome-extension)
 
 To run this project, you will need to add the following environment variables to your /Server/.env file
 
-`DEEPAI_KEY`    
-https://deepai.org/api-docs/
 
-`GOOGLE_APPLICATION_CREDENTIALS`    
-https://cloud.google.com/speech-to-text/docs/before-you-begin 
+<pre>
+  <a href="https://deepai.org/api-docs/
+  ">DEEPAI_KEY</a>
+
+  <a href="https://cloud.google.com/speech-to-text/docs/before-you-begin 
+  ">GOOGLE_APPLICATION_CREDENTIALS</a>
+</pre>
+
+
+
+    
+
 
   
 ## Acknowledgements
