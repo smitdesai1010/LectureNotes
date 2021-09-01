@@ -14,10 +14,8 @@ This application was developed after my friends complained how difficult it is t
 
 ## Screenshots
 
-<p float="left">
-  <img src="Assets/SS-1.jpg" width="300" height="150"/>
-  <img src="Assets/SS-2.jpg" width="300" height="150"/>
-  <img src="Assets/SS-5.jpg" width="100" height="100"/>
+<p align="center" width="100%">
+  <img src="Assets/SS-1.jpg" width="330" height="150"/>
 </p>
 
 <p float="left">
@@ -37,9 +35,7 @@ This application was developed after my friends complained how difficult it is t
 ```
 | Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
-| `config` | `json` |  Configration of google speech to text api |
-
-https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig
+| `config` | `json` |  [Configration](https://cloud.google.com/speech-to-text/docs/reference/rest/v1/RecognitionConfig) of google speech to text api |
 
 #### Get notes
 
