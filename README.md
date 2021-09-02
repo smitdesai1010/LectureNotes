@@ -5,10 +5,10 @@
 <span style="color:red; font-family:Audiowide; font-size:48px; font-weight: normal" >LectureNotes</span>
 </h1>
 
-It is a chrome extension that summarizes the audio from a chrome tab into text with support for multiple languages and is primarily intended
-to take notes during a live session/lecture.
+A chrome extension that summarizes audio from a chrome tab into text with support for multiple languages 
 
-This application was developed after my friends complained how difficult it is to take understand and take notes from a lecture at the same time
+This application was developed after my friends complained how difficult it is to take understand and take notes from a lecture at the same time and is primarily intended to take notes during a live session/lecture.
+
 
 
 
@@ -74,14 +74,19 @@ This application was developed after my friends complained how difficult it is t
   
 ## Run Locally
 
+Install node and npm
+```
+https://nodejs.org/en/download/
+```
+
 Clone the project
 
 ```bash
   git clone https://github.com/smitdesai1010/LectureNotes.git
 ```
 
-To start server, go to the project directory    
-Pre-requirements:  node and npm
+Go to the project directory
+  
 ```bash 
    cd Server
    npm install      //Install dependencies
