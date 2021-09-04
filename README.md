@@ -28,7 +28,7 @@ This application was developed after my friends complained how difficult it is t
 
 ```http
   POST /register
-  Return: [ text/plain ] unique ID, used for further communication. 
+  Return: <text/plain> unique ID, used for further communication. 
 
 ```
 | Parameter | Type     | Description                |
