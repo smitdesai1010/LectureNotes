@@ -10,7 +10,13 @@ A chrome extension that summarizes audio from a chrome tab into text with suppor
 This application was developed after my friends complained how difficult it is to take understand and take notes from a lecture at the same time and is primarily intended to take notes during a live session/lecture.
 
 
-
+```diff
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@
+```
 
 ## Screenshots
 
