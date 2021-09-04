@@ -21,13 +21,6 @@ const PORT = 8080;
 let userData = {};
 let userID = 0;
 
-//set cors opqque for other users
-//use redis 
-//implement heartbeat mechanism for websockets
-//add multiple language support   //done
-//work on API responses   //done
-//identify socket close     //done
-//polling for client registration //done
 
 app.use(cors({
     origin: 'chrome-extension://okffaginjdbcdkkhoepjeghoiegbhohf',

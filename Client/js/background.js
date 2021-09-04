@@ -39,7 +39,6 @@ let registerationInterval = setInterval(() => {     //using polling for register
 
 
 
-//ToDO : stop recording when a tab closes without clicking on stop record
 
 chrome.runtime.onMessage.addListener( (request, sender, response) => {
 
