@@ -10,9 +10,6 @@ A chrome extension that summarizes audio from a chrome tab into text with suppor
 This application was developed after my friends complained how difficult it is to take understand and take notes from a lecture at the same time and is primarily intended to take notes during a live session/lecture.
 
 
-- ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=SmitDesai)
-
-
 ## Screenshots
 
 <p align="center" width="100%">
