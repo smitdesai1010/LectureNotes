@@ -30,7 +30,7 @@ This application was developed after my friends complained how difficult it is t
 
 ```http
   POST /register
-  Return: [text/plain] unique ID, used for further communication. 
+  Return: [ text/plain ] unique ID, used for further communication. 
 
 ```
 | Parameter | Type     | Description                |
@@ -41,7 +41,7 @@ This application was developed after my friends complained how difficult it is t
 
 ```http
   POST /getNotes
-  Return: [text/plain] Summarized text and transcription 
+  Return: [ text/plain ] Summarized text and transcription 
 ```
 
 | Parameter | Type     | Description                       |
@@ -55,7 +55,7 @@ This application was developed after my friends complained how difficult it is t
   Example: ws://LectureNotes:8080?ID=12&languageCode=hi-IN
   Note: Use native websockets
   
-  Return: [text/plain] errors, if any
+  Return: [ text/plain ] errors, if any
 ```
 
 | QueryString Parameter | Type     | Description                       |
