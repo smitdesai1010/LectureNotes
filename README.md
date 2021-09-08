@@ -28,18 +28,21 @@ This application was developed after my friends complained how difficult it is t
   * Audio configration is sent to the server
   * The server creates a session corresponding to the client 
 <br/>
+
 * Upon start recording
   * A WebSocket connection is opened with the server
   * The audio stream of the tab is captured by the background script - before it reaches to the speaker.   
   * A Audio object plays the audio from the background script
   * Every 14 secs, a base64 string of the audio is sent to the server for transcription via Google speech to text.
 <br/>
+
 * Upon stop recording
   * The last buffered audio is sent to the server as a base64 string
   * Websocket connection is terminated
   * All audio streams are disconnected
   * Other objects are destroyed
 <br/>
+
 * Upon get notes
   * Server performs text summerization using DeepAI, sends back the response and resets transcription
   * Client converts the response into a blob and downloads it.
