@@ -122,6 +122,16 @@ Clone the project
   git clone https://github.com/smitdesai1010/LectureNotes.git
 ```
 
+To run this project, you will need to add the following environment variables in a ./Server/.env file
+
+<pre>
+  <a href="https://deepai.org/api-docs/
+  ">DEEPAI_KEY</a>
+
+  <a href="https://cloud.google.com/speech-to-text/docs/before-you-begin 
+  ">GOOGLE_APPLICATION_CREDENTIALS</a>
+</pre>
+
 Go to the project directory
   
 ``` 
@@ -138,19 +148,8 @@ To start client (chrome-extension)
     Click on extensions and allow "LectureNotes"
 ```
 
-  
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your /Server/.env file
 
 
-<pre>
-  <a href="https://deepai.org/api-docs/
-  ">DEEPAI_KEY</a>
-
-  <a href="https://cloud.google.com/speech-to-text/docs/before-you-begin 
-  ">GOOGLE_APPLICATION_CREDENTIALS</a>
-</pre>
 
 
   
@@ -158,7 +157,7 @@ To run this project, you will need to add the following environment variables to
 
  - [Chrome extension API](https://developer.chrome.com/docs/extensions/reference/)
  - [Google speech to text](https://cloud.google.com/speech-to-text/?utm_source=google&utm_medium=cpc&utm_campaign=japac-IN-all-en-dr-bkws-all-super-trial-e-dr-1009882&utm_content=text-ad-none-none-DEV_c-CRE_506995057599-ADGP_Hybrid%20%7C%20BKWS%20-%20EXA%20%7C%20Txt%20~%20AI%20%26%20ML%20~%20Speech-to-Text_Speech%20-%20google%20speech%20to%20text-KWID_43700030970546716-kwd-21425535976&userloc_9301226-network_g&utm_term=KW_google%20speech%20to%20text&gclsrc=aw.ds&ds_rl=1264446&gclid=Cj0KCQjwpreJBhDvARIsAF1_BU1UJI_d8euTVe-u9n9vbAiTGWjDwau8Y9x7bmrNI-mxsxFPVEAfMmEaArEbEALw_wcB)
- - [DeepAI text summarizer](https://deepai.org/machine-learning-model/summarization)
+ - [DeepAI text summarizer API](https://deepai.org/machine-learning-model/summarization)
  - [Websockets for node.js](https://www.npmjs.com/package/ws)
 
   
