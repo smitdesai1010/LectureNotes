@@ -125,7 +125,7 @@ Clone the project
   git clone https://github.com/smitdesai1010/LectureNotes.git
 ```
 
-To run this project, you will need to add the following environment variables in a .env file located in ./Server folder
+Add the following environment variables in a .env file located in ./Server folder
 
 <pre>
   <a href="https://deepai.org/api-docs/
