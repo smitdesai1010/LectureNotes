@@ -147,8 +147,8 @@ To start client (chrome-extension)
 ```
     Open Google chrome
     Click on "extension" > "Manage extensions"
-    Click on "Load unpacked" and select the ./client/ folder in the project directory
-    Click on extensions and allow "LectureNotes"
+    Click on "Load unpacked" > select the ./client/ folder in the project directory
+    Click on "extensions" > "LectureNotes"
 ```
 
 
