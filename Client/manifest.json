@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "LectureNotes.AI",
-    "description": "Notes.AI helps to take notes from a online meeting in real time with various languages",
+    "description": "A chrome extension that summarizes audio from a chrome tab into text with support for multiple languages",
     "version": "1.0",
 
     "browser_action": {
