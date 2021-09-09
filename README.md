@@ -2,12 +2,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
 
 <h1>
-<span style="color:red; font-family:Audiowide; font-size:48px; font-weight: normal" >LectureNotes</span>
+<span style="font-family:Audiowide; font-size:48px; font-weight: normal" >LectureNotes</span>
 </h1>
 
 A chrome extension that summarizes audio from a chrome tab into text with support for multiple languages 
 
 This application was developed after my friends complained how difficult it is to take understand and take notes from a lecture at the same time and is primarily intended to take notes during a live session/lecture.
+
+![System-Design](System-Design.png)
+
 
 
 ## Screenshots
