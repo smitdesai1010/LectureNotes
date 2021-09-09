@@ -11,18 +11,17 @@ This application was developed after my friends complained how difficult it is t
 
 ![System-Design](System-Design.png)
 
-
-
-## Screenshots
-
-<p width="100%">
-  <img src="Assets/SS-1.jpg" width="330" height="150"/>
-</p>
-
-<p float="left">
-  <img src="Assets/SS-4.jpg" width="45%"/>
-  <img src="Assets/SS-3.jpg" width="45%"/>
-</p>
+<details>
+    <summary style="cursor:pointer; font-size: 28px; font-weight: bold; font">Screenshots</summary>
+    <p align="center" width="100%">
+      <img src="Assets/SS-1.jpg" width="330" height="150"/>
+    </p>
+    <p float="left">
+      <img src="Assets/SS-4.jpg" width="45%"/>
+      <img src="Assets/SS-3.jpg" width="45%"/>
+    </p>
+</details>
+<br/>
 
 ## Working
 
