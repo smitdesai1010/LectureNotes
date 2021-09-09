@@ -1,9 +1,4 @@
-
-<link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-
-<h1>
-<span style="font-family:Audiowide; font-size:48px; font-weight: normal" >LectureNotes</span>
-</h1>
+# LectureNotes
 
 A chrome extension that summarizes audio from a chrome tab into text with support for multiple languages 
 
@@ -14,7 +9,7 @@ This application was developed after my friends complained how difficult it is t
 <details>
     <summary style="cursor:pointer; font-size: 28px; font-weight: bold; font">Screenshots</summary>
     <p align="center" width="100%">
-      <img src="Assets/SS-1.jpg" width="330" height="150"/>
+      <img src="Assets/SS-1.jpg" width="350" height="200"/>
     </p>
     <p float="left">
       <img src="Assets/SS-4.jpg" width="45%"/>
@@ -54,7 +49,7 @@ This application was developed after my friends complained how difficult it is t
 
 * Increased performance by ~70ms by implementing a dual communication channel of http requests and web sockets.
   * Intially, a single Websocket connection was used for server-client communication and different event data were transmitted as JSON.
-  * The audio is encoded uses PCM .wav format, A 14 sec base64 audio string is of size ~1.5Mb
+  * The audio is in uncompressed .wav format, A 14 sec base64 audio string is of size ~1.5Mb
   * To avoid json processing of a 1.5 Mb string, websockets now transmit the raw base64 audio string whereas http request are used for other type of events.
 
 ## Future Planning
