@@ -8,7 +8,6 @@ const deepai = require('deepai');
 deepai.setApiKey(process.env.DEEPAI_KEY);
 
 //setting up server, cors and web sockets
-const util = require('util');
 const cors = require('cors');
 const queryString = require('query-string');
 const express = require('express');
@@ -49,6 +48,10 @@ app.post('/getNotes', (req, res) => {
       if (ID == null) {
         res.status(400).send('The client ID is null');
         return;
+      }
+
+      if (userData[ID].transcription == null || userData[ID].transcription == '') {
+        res.send('Not enough data')
       }
 
       deepai.callStandardApi("summarization", {text: userData[ID].transcription, }) 
@@ -96,7 +99,7 @@ wss.on('connection', (ws,req) => {
       })
       .then( ([response]) => {
         const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
-        //console.log(`Transcription: ${transcription}`);
+        // console.log(`Transcription: ${transcription}`);
         userData[ID].transcription += transcription;
       })
       .catch(err => {
