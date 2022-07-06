@@ -1,6 +1,7 @@
 # LectureNotes
 
 A chrome extension that summarizes audio from a chrome tab into text with support for multiple languages.
+<br/>
 Get it on [Chrome Web Store](https://chrome.google.com/webstore/detail/lecturenotes/qlmlpshgthdcdjpifhmnnrojplfjncoa)
 
 This application was developed after my friends complained how difficult it is to take understand and take notes from a lecture at the same time and is primarily intended to take notes during a live session/lecture.
